@@ -61,9 +61,43 @@ def load_data():
     return pd.read_csv(csv)
 
 
+# TESS dispositions -> our binary scheme. CP/KP = real planet, FP/FA = false
+# positive, PC/APC = still-unconfirmed candidate (held out, like Kepler CANDIDATEs).
+TESS_DISP = {"CP": "CONFIRMED", "KP": "CONFIRMED", "FP": "FALSE POSITIVE",
+             "FA": "FALSE POSITIVE", "PC": "CANDIDATE", "APC": "CANDIDATE"}
+
+
+def load_tess():
+    """NASA TESS Objects of Interest, mapped onto the same feature schema as KOI.
+    TESS reports period, duration, depth(ppm), planet radius, eq-temp, insolation,
+    and host-star teff/logg/radius; it does not report Kepler's model SNR or impact
+    parameter, so those two are left NaN and median-imputed alongside Kepler's."""
+    csv = DATA / "toi.csv"
+    if not csv.exists():
+        cols = ("toi,tfopwg_disp,pl_orbper,pl_trandurh,pl_trandep,pl_rade,"
+                "pl_eqt,pl_insol,st_teff,st_logg,st_rad")
+        url = ("https://exoplanetarchive.ipac.caltech.edu/TAP/sync?query="
+               f"select+{cols}+from+toi&format=csv")
+        print("downloading NASA TESS TOI table...")
+        urllib.request.urlretrieve(url, csv)
+    t = pd.read_csv(csv)
+    out = pd.DataFrame({
+        "koi_period": t["pl_orbper"], "koi_duration": t["pl_trandurh"],
+        "koi_depth": t["pl_trandep"], "koi_prad": t["pl_rade"],
+        "koi_teq": t["pl_eqt"], "koi_insol": t["pl_insol"],
+        "koi_model_snr": float("nan"), "koi_steff": t["st_teff"],
+        "koi_slogg": t["st_logg"], "koi_srad": t["st_rad"], "koi_impact": float("nan"),
+        "koi_disposition": t["tfopwg_disp"].map(TESS_DISP),
+        "kepoi_name": "TOI-" + t["toi"].astype(str), "kepler_name": pd.NA,
+    })
+    return out.dropna(subset=["koi_disposition"])
+
+
 def main():
-    df = load_data()
-    print(f"loaded {len(df)} Kepler objects of interest")
+    df_k = load_data()
+    df_t = load_tess()
+    df = pd.concat([df_k, df_t], ignore_index=True)
+    print(f"loaded {len(df_k)} Kepler + {len(df_t)} TESS = {len(df)} objects of interest")
 
     # binary task: CONFIRMED (1) vs FALSE POSITIVE (0); CANDIDATE rows are held out as "unknowns"
     labeled = df[df["koi_disposition"].isin(["CONFIRMED", "FALSE POSITIVE"])].copy()
@@ -119,11 +153,12 @@ def main():
 
     artifacts = {
         "dataset": {
-            "name": "NASA Kepler Objects of Interest (cumulative)",
+            "name": "NASA Kepler + TESS (KOI + TOI)",
             "n": int(len(X)), "n_total": int(len(df)),
             "target": "CONFIRMED exoplanet vs FALSE POSITIVE",
-            "source": "NASA Exoplanet Archive (exoplanetarchive.ipac.caltech.edu)",
-            "citation": "NASA Exoplanet Archive, Kepler cumulative KOI table. Borucki et al. 2010.",
+            "source": "NASA Exoplanet Archive — Kepler cumulative KOI + TESS TOI tables",
+            "citation": "NASA Exoplanet Archive (Kepler KOI cumulative; TESS TOI). Borucki et al. 2010; Ricker et al. 2015.",
+            "datasets": ["Kepler KOI", "TESS TOI"],
         },
         "features": [{"key": k, "label": l, "unit": u, "note": n} for (k, l, u, n) in FEATURES],
         "feature_order": COLS,
