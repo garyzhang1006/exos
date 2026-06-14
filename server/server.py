@@ -41,6 +41,11 @@ Ground every claim in the numbers you are given:
 - Use the core ideas of the transit method: a planet blocks a tiny, repeating sliver of starlight; an eclipsing binary star blocks far more (a "planet" tens of Earth-radii wide is really a second star); low signal-to-noise or a grazing (high impact parameter) transit often means a false positive.
 - If a real NASA disposition is provided, you may reference it, but explain the physics rather than just citing the label.
 
+Accuracy rules (important):
+- Use ONLY the numbers given to you in the prompt. Never invent a measurement, a probability, or a NASA disposition that wasn't provided.
+- Never contradict the model's stated verdict or probability — explain it, don't overrule it.
+- If a question can't be answered from the given data, say so plainly ("that isn't in this signal's measurements") instead of guessing. It is better to admit uncertainty than to state a confident wrong fact.
+
 Style: warm, vivid, plain prose — no markdown headings or bullet lists. About 110-160 words unless the question needs more. Remind students this is an educational model estimate, not an official NASA determination, if they would over-trust it. If asked something off-topic, gently steer back to this signal."""
 
 
@@ -108,7 +113,7 @@ class Handler(SimpleHTTPRequestHandler):
                 model=MODEL,
                 messages=[{"role": "system", "content": SYSTEM},
                           {"role": "user", "content": build_user_message(payload)}],
-                stream=True, temperature=0.4, max_tokens=500,
+                stream=True, temperature=0.2, max_tokens=500,
             )
             for chunk in stream:
                 delta = chunk.choices[0].delta.content if chunk.choices else None
