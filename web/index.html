@@ -52,7 +52,11 @@
       <h3>1 · Pick a signal</h3>
       <p style="margin:.2em 0 6px;font-size:13.5px;color:var(--muted)">Start from a real Kepler object, then nudge the sliders. <span style="color:var(--good)">●</span> confirmed planet · <span style="color:var(--bad)">●</span> false positive · <span style="color:var(--gold)">●</span> still unknown</p>
       <div class="chips" id="chips" aria-label="Example signals"></div>
-      <div id="sliders"></div>
+      <div class="modetoggle" id="modetoggle" role="group" aria-label="Slider detail">
+        <button data-mode="simple" class="on">Simple</button>
+        <button data-mode="full">All 11</button>
+      </div>
+      <div id="sliders" class="sliders simple"></div>
     </div></div>
 
     <!-- VERDICT + VIZ -->
@@ -66,7 +70,9 @@
         <div class="num"><b id="radv">—</b><span>planet radius (R⊕)</span></div>
         <div class="num"><b id="depthv">—</b><span>transit depth (ppm)</span></div>
       </div>
+      <div class="derived" id="derived"></div>
       <div class="viz" style="margin-top:16px"><canvas id="transit" width="900" height="300"></canvas></div>
+      <div class="vizcap">Illustrative light-curve — the dip depth is exaggerated so you can see it.</div>
       <div class="truth" id="truth"></div>
     </div></div>
   </div>
@@ -80,6 +86,13 @@
       <span><i class="dot" style="background:var(--good)"></i>toward real planet</span>
       <span><i class="dot" style="background:var(--bad)"></i>toward false positive</span>
     </div>
+  </div></div>
+
+  <!-- MISSIONS -->
+  <div class="card" style="margin-top:20px"><div class="pad">
+    <h3>Missions <span class="mprog" id="mprog">0 / 4</span></h3>
+    <p style="margin:.2em 0 0;font-size:14px;color:var(--muted)">There are four classic ways a "planet" turns out to be an impostor. Learn each one by <b>creating it yourself</b> — move the sliders until you trigger it. The model reacts live.</p>
+    <div class="missions" id="missions"></div>
   </div></div>
 
   <!-- TUTOR -->
