@@ -226,16 +226,16 @@ const Transit = {
       if(ph>=a && ph<=b){
         const u=(ph-a)/(b-a);
         const px = starX - starR - pr + u*(2*(starR+pr));
-        g.fillStyle="#05070C"; g.beginPath(); g.arc(px,starY,pr,0,7); g.fill();
-        g.strokeStyle="rgba(63,167,196,.55)"; g.lineWidth=1.5; g.stroke();
+        g.fillStyle="#1F2937"; g.beginPath(); g.arc(px,starY,pr,0,7); g.fill();
+        g.strokeStyle="rgba(37,99,235,.5)"; g.lineWidth=1.5; g.stroke();
       }
 
       const baseY=210, h=70, x0=70, x1=W-30;
-      g.strokeStyle="#1B2330"; g.lineWidth=1;
+      g.strokeStyle="#E2E8F0"; g.lineWidth=1;
       g.beginPath(); g.moveTo(x0,baseY); g.lineTo(x1,baseY); g.stroke();
-      g.fillStyle="#7C8AA0"; g.font="11px 'IBM Plex Mono', ui-monospace, monospace";
-      g.fillText("BRIGHTNESS", x0, baseY-h-8); g.fillText("TIME", x1-34, baseY+22);
-      g.strokeStyle = planet ? "#46D9A0" : "#FF5D6C"; g.lineWidth=2.2; g.beginPath();
+      g.fillStyle="#94A3B8"; g.font="600 11px 'Plus Jakarta Sans', sans-serif";
+      g.fillText("brightness", x0, baseY-h-8); g.fillText("time", x1-30, baseY+22);
+      g.strokeStyle = planet ? "#0E9F6E" : "#E11D48"; g.lineWidth=2.4; g.beginPath();
       for(let i=0;i<=240;i++){
         const fph=i/240, sx=x0+(x1-x0)*fph;
         let dim=0;
@@ -246,7 +246,7 @@ const Transit = {
       g.stroke();
       const mx=x0+(x1-x0)*ph;
       let mdim=0; if(ph>=a&&ph<=b){const u=(ph-a)/(b-a);const ov=Math.max(0,1-Math.abs(u-.5)*2);mdim=dipFrac*ov;}
-      g.fillStyle="#3FA7C4"; g.beginPath(); g.arc(mx, baseY-h+mdim*h, 3.2, 0, 7); g.fill();
+      g.fillStyle="#2563EB"; g.beginPath(); g.arc(mx, baseY-h+mdim*h, 3.4, 0, 7); g.fill();
       me.raf = requestAnimationFrame(frame);
     }
     me.raf = requestAnimationFrame(frame);
@@ -365,7 +365,7 @@ const Missions = {
     this.LIST.forEach(m=>{
       const c=document.createElement("div"); c.className="mission"; c.id="m-"+m.id;
       const h=document.createElement("div"); h.className="mh"; h.append(m.title);
-      const s=document.createElement("span"); s.className="mstate"; s.textContent="ARMED"; h.append(s);
+      const s=document.createElement("span"); s.className="mstate"; s.textContent="Locked"; h.append(s);
       const g=document.createElement("div"); g.className="mgoal"; g.textContent=m.goal;
       const t=document.createElement("div"); t.className="mteach"; t.textContent="✓ "+m.teach;
       c.append(h,g,t); wrap.appendChild(c);
@@ -384,7 +384,7 @@ const Missions = {
       const c=document.getElementById("m-"+m.id); if(!c) return;
       const done=this.solved.has(m.id);
       c.classList.toggle("solved", done);
-      c.querySelector(".mstate").textContent = done?"● SOLVED":"ARMED";
+      c.querySelector(".mstate").textContent = done?"Solved":"Locked";
     });
     const el=document.getElementById("mprog");
     if(el) el.textContent = this.solved.size+" / "+this.LIST.length;
