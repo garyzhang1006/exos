@@ -1,0 +1,4 @@
+Exos -- Kepler planet classifier
+dataset: 7586 labeled KOIs (2747 planets / 4839 false positives)
+logistic: acc=0.827 AUC=0.902 F1=0.773
+gradient_boosting: acc=0.932 AUC=0.980 F1=0.907

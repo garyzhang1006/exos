@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Exos — find planets the way NASA does</title>
+<meta name="description" content="A machine-learning model trained on NASA's real Kepler data predicts whether a transit signal is a real exoplanet or a false positive — and an AI tutor (GPT-4o-mini) teaches you the astronomy behind every prediction." />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%AA%90%3C/text%3E%3C/svg%3E" />
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+<!-- ONNX Runtime Web - runs the trained Kepler classifier 100% client-side -->
+<script src="https://cdn.jsdelivr.net/npm/onnxruntime-web@1.26.0/dist/ort.wasm.min.js"></script>
+<link rel="stylesheet" href="./app.css" />
+</head>
+<body>
+<canvas class="stars" id="stars"></canvas>
+<a href="#main" class="skip">Skip to content</a>
+
+<div class="loading" id="loading">
+  <div style="text-align:center">
+    <div class="spinner"></div>
+    <div id="loadmsg" style="font-weight:600">Loading the model…</div>
+    <div style="font-size:12.5px;color:var(--muted);margin-top:6px">NASA Kepler classifier · runs in your browser</div>
+  </div>
+</div>
+
+<header>
+  <div class="wrap nav">
+    <div class="logo"><span class="orb"></span> Exos</div>
+    <span class="pill">NASA <b>Kepler</b> data · ML in-browser</span>
+    <span class="sp"></span>
+    <a class="btnlink" href="#learn">The science</a>
+    <a class="btnlink" href="#how">How it works</a>
+    <a class="btnlink" id="repolink" href="#" target="_blank" rel="noopener">GitHub</a>
+  </div>
+</header>
+
+<main id="main" class="wrap">
+  <section class="hero">
+    <div class="badges">
+      <span class="pill">🛰️ Trained on <b id="bN">7,586</b> real Kepler signals</span>
+      <span class="pill">🎯 Test ROC-AUC <b id="bAUC">0.98</b></span>
+      <span class="pill">🤖 AI tutor · <b>GPT-4o-mini</b></span>
+    </div>
+    <h1>Find planets the way <span class="grad">NASA does.</span></h1>
+    <p class="sub">When a star flickers, is it a real planet crossing it — or a false alarm? A model trained on NASA's Kepler mission decides in your browser, shows the light-curve, and an AI tutor teaches you the astronomy behind the call.</p>
+  </section>
+
+  <div class="grid">
+    <!-- INPUT -->
+    <div class="card"><div class="pad">
+      <h3>1 · Pick a signal</h3>
+      <p style="margin:.2em 0 6px;font-size:13.5px;color:var(--muted)">Start from a real Kepler object, then nudge the sliders. <span style="color:var(--good)">●</span> confirmed planet · <span style="color:var(--bad)">●</span> false positive · <span style="color:var(--gold)">●</span> still unknown</p>
+      <div class="chips" id="chips" aria-label="Example signals"></div>
+      <div id="sliders"></div>
+    </div></div>
+
+    <!-- VERDICT + VIZ -->
+    <div class="card"><div class="pad">
+      <h3>2 · The model's call</h3>
+      <div class="verdict" id="verdict">—</div>
+      <div class="confbar"><div class="conffill" id="conffill" style="width:50%;background:var(--muted)"></div></div>
+      <div class="confrow"><span>false positive</span><span id="confpct">—</span><span>real planet</span></div>
+      <div class="nums">
+        <div class="num"><b id="probv">—</b><span>planet probability</span></div>
+        <div class="num"><b id="radv">—</b><span>planet radius (R⊕)</span></div>
+        <div class="num"><b id="depthv">—</b><span>transit depth (ppm)</span></div>
+      </div>
+      <div class="viz" style="margin-top:16px"><canvas id="transit" width="900" height="300"></canvas></div>
+      <div class="truth" id="truth"></div>
+    </div></div>
+  </div>
+
+  <!-- WHY -->
+  <div class="card" style="margin-top:20px"><div class="pad">
+    <h3>3 · Why? — what's driving the call</h3>
+    <p style="margin:.2em 0 0;font-size:14px;color:var(--muted)">How each measurement pushes the verdict toward <b>planet</b> or <b>false positive</b>, from an interpretable model trained on the same data. Hover a feature to learn what it means.</p>
+    <div class="bars" id="bars"></div>
+    <div class="legend">
+      <span><i class="dot" style="background:var(--good)"></i>toward real planet</span>
+      <span><i class="dot" style="background:var(--bad)"></i>toward false positive</span>
+    </div>
+  </div></div>
+
+  <!-- TUTOR -->
+  <div class="card" id="tutorCard" style="margin-top:20px"><div class="pad">
+    <h3>4 · Ask the AI tutor <span class="tutorpill">GPT-4o-mini</span></h3>
+    <p style="margin:.2em 0 0;font-size:14px;color:var(--muted)">It explains the model's call in plain English, grounded in this signal's real measurements. Ask anything, or tap a question.</p>
+    <div class="inputrow" style="margin-top:12px">
+      <input type="text" id="tutorQ" placeholder="e.g. Why does a huge planet radius mean it's probably NOT a planet?" autocomplete="off" aria-label="Ask the tutor" />
+      <button class="btn" id="tutorAsk">Ask</button>
+    </div>
+    <button class="btn ghost" id="tutorExplain" style="margin-top:8px;width:100%">✨ Explain this verdict</button>
+    <div class="qchips" id="qchips"></div>
+    <div class="tutorout" id="tutorOut" aria-live="polite"></div>
+    <div class="tutornote" id="tutorNote"></div>
+  </div></div>
+
+  <!-- LEARN -->
+  <section class="block" id="learn">
+    <h2>The transit method, in plain words</h2>
+    <p class="lead">Kepler stared at 150,000 stars and watched for tiny, repeating dips in brightness. A dip can mean a planet — or an impostor. Here's how scientists tell them apart.</p>
+    <div class="lessons">
+      <div class="lesson"><div class="ic">🌑</div><h4>A planet makes a dip</h4><p>When a planet crosses in front of its star, it blocks a sliver of light. The star dims by a few hundred parts per million, then brightens again — once per orbit.</p></div>
+      <div class="lesson"><div class="ic">👯</div><h4>Impostors make big dips</h4><p>Two stars orbiting each other (an eclipsing binary) block <em>far</em> more light — a "planet" tens of Earth-radii wide is really a second star. Depth and inferred radius give it away.</p></div>
+      <div class="lesson"><div class="ic">📉</div><h4>Noise makes weak dips</h4><p>Low signal-to-noise or a grazing, off-center crossing often turns out to be a false positive. The model weighs all of this at once.</p></div>
+    </div>
+  </section>
+
+  <!-- HOW -->
+  <section class="block" id="how">
+    <h2>How it works</h2>
+    <p class="lead">A real machine-learning pipeline — trained offline on NASA's published catalog, shipped to your browser. The model runs client-side; only the AI tutor calls a server.</p>
+    <div class="metrics">
+      <div class="metric"><b id="mAcc">—</b><span>test accuracy</span></div>
+      <div class="metric"><b id="mAUC">—</b><span>ROC-AUC</span></div>
+      <div class="metric"><b id="mN">—</b><span>training signals</span></div>
+      <div class="metric"><b id="mModel">gradient boosting</b><span>model</span></div>
+    </div>
+    <p style="font-size:13.5px;color:var(--muted);margin-top:14px">We exclude NASA's own false-positive flags from the features, so the model learns from physics — orbital period, transit depth and duration, inferred planet size, signal strength, and the host star — not from the answer key.</p>
+  </section>
+</main>
+
+<footer><div class="wrap">
+  <b>Exos</b> — learn to find planets the way NASA does. Built for DSH Hacks V1 (AI × STEM Education).
+  <div class="cite" id="cite">Data: loading…</div>
+  <p style="margin-top:12px">Predictions are an educational model's estimates, not official NASA dispositions. The AI tutor explains; it does not re-decide the verdict.</p>
+</div></footer>
+
+<script src="./app.js"></script>
+</body>
+</html>

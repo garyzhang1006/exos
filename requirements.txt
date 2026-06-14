@@ -1,0 +1,7 @@
+# Runtime (deploy) dependency: only the AI tutor proxy needs Python at serve time.
+# The Kepler classifier is a pre-built ONNX model that runs in the browser.
+openai>=1.50,<3
+
+# Training-only deps (to retrain the model with model/train.py) are NOT needed to
+# run or deploy the app. Install them separately if you want to retrain:
+#   pip install numpy pandas scikit-learn skl2onnx onnx onnxruntime

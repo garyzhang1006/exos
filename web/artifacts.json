@@ -1,0 +1,408 @@
+{
+  "dataset": {
+    "name": "NASA Kepler Objects of Interest (cumulative)",
+    "n": 7586,
+    "n_total": 9564,
+    "target": "CONFIRMED exoplanet vs FALSE POSITIVE",
+    "source": "NASA Exoplanet Archive (exoplanetarchive.ipac.caltech.edu)",
+    "citation": "NASA Exoplanet Archive, Kepler cumulative KOI table. Borucki et al. 2010."
+  },
+  "features": [
+    {
+      "key": "koi_period",
+      "label": "Orbital period",
+      "unit": "days",
+      "note": "How long one orbit takes. Real planets span a huge range; very short periods need care."
+    },
+    {
+      "key": "koi_duration",
+      "label": "Transit duration",
+      "unit": "hours",
+      "note": "How long the star dims for. Must be consistent with the period and star size for a real planet."
+    },
+    {
+      "key": "koi_depth",
+      "label": "Transit depth",
+      "unit": "ppm",
+      "note": "How much the star's light drops. Deeper dip = bigger object crossing -- but a star-sized dip means an eclipsing binary, not a planet."
+    },
+    {
+      "key": "koi_prad",
+      "label": "Planet radius",
+      "unit": "R_Earth",
+      "note": "Inferred radius in Earth radii. Tens of Earth radii is star-sized -> usually a FALSE POSITIVE."
+    },
+    {
+      "key": "koi_teq",
+      "label": "Equilibrium temp",
+      "unit": "K",
+      "note": "Estimated temperature from the star's heat. Context for habitability, weak on its own."
+    },
+    {
+      "key": "koi_insol",
+      "label": "Insolation flux",
+      "unit": "Earth=1",
+      "note": "Starlight received vs Earth. Extreme values hint at very close or odd orbits."
+    },
+    {
+      "key": "koi_model_snr",
+      "label": "Signal-to-noise",
+      "unit": "",
+      "note": "Strength of the transit signal. Low SNR often means noise or a marginal false positive."
+    },
+    {
+      "key": "koi_steff",
+      "label": "Star temperature",
+      "unit": "K",
+      "note": "Host star's surface temperature."
+    },
+    {
+      "key": "koi_slogg",
+      "label": "Star surface gravity",
+      "unit": "log g",
+      "note": "Host star's surface gravity; helps pin down the star's size."
+    },
+    {
+      "key": "koi_srad",
+      "label": "Star radius",
+      "unit": "R_Sun",
+      "note": "Host star's radius. Needed to turn a transit depth into a planet size."
+    },
+    {
+      "key": "koi_impact",
+      "label": "Impact parameter",
+      "unit": "",
+      "note": "How centrally the object crosses the star (0 = central). Grazing (>1) transits are often false positives."
+    }
+  ],
+  "feature_order": [
+    "koi_period",
+    "koi_duration",
+    "koi_depth",
+    "koi_prad",
+    "koi_teq",
+    "koi_insol",
+    "koi_model_snr",
+    "koi_steff",
+    "koi_slogg",
+    "koi_srad",
+    "koi_impact"
+  ],
+  "scaler": {
+    "mean": [
+      52.14168128609213,
+      5.620239325972335,
+      28202.317122610555,
+      53.2883536585366,
+      1141.412162162162,
+      9346.53509228741,
+      309.9850527356631,
+      5714.519116677653,
+      4.317528839815404,
+      1.715966381015154,
+      0.7253223632168725
+    ],
+    "scale": [
+      112.4280756073902,
+      6.441694240051477,
+      87367.43056775957,
+      1080.107218909625,
+      881.2463048429464,
+      188721.10120504833,
+      872.5680327075222,
+      799.3753183590258,
+      0.4255167369214768,
+      6.3782304840478705,
+      2.877133115690237
+    ]
+  },
+  "logistic": {
+    "coef": [
+      -1.5885677521046677,
+      -0.6005283822529666,
+      -6.634662125330161,
+      -2.772790131819681,
+      -2.464564230839986,
+      -1.129952001215163,
+      0.4073855948342127,
+      -0.1648111359830974,
+      -1.232077283296933,
+      -4.092484702644667,
+      -3.8606700524234308
+    ],
+    "intercept": -3.423131377785064
+  },
+  "feature_stats": {
+    "koi_period": {
+      "min": 0.241842544,
+      "max": 1071.232624,
+      "mean": 51.65589051625771,
+      "std": 111.83188379157966,
+      "median": 8.0809788
+    },
+    "koi_duration": {
+      "min": 0.1046,
+      "max": 138.54,
+      "mean": 5.712878882151331,
+      "std": 6.825779007977477,
+      "median": 3.836305
+    },
+    "koi_depth": {
+      "min": 0.8,
+      "max": 1541400.0,
+      "mean": 28534.699802267332,
+      "std": 89749.437972081,
+      "median": 501.4
+    },
+    "koi_prad": {
+      "min": 0.08,
+      "max": 200346.0,
+      "mean": 100.68965199050884,
+      "std": 3125.5521777122776,
+      "median": 2.62
+    },
+    "koi_teq": {
+      "min": 92.0,
+      "max": 14667.0,
+      "mean": 1146.8313999472714,
+      "std": 885.9890100638531,
+      "median": 933.0
+    },
+    "koi_insol": {
+      "min": 0.02,
+      "max": 10947554.55,
+      "mean": 9125.34053255998,
+      "std": 175589.23711618743,
+      "median": 180.55
+    },
+    "koi_model_snr": {
+      "min": 0.0,
+      "max": 9054.7,
+      "mean": 308.75123912470343,
+      "std": 867.4428562193473,
+      "median": 30.5
+    },
+    "koi_steff": {
+      "min": 2661.0,
+      "max": 15896.0,
+      "mean": 5718.153440548379,
+      "std": 805.3257162260028,
+      "median": 5774.0
+    },
+    "koi_slogg": {
+      "min": 0.047,
+      "max": 5.283,
+      "mean": 4.315070129185341,
+      "std": 0.43036630941061327,
+      "median": 4.438
+    },
+    "koi_srad": {
+      "min": 0.116,
+      "max": 229.908,
+      "mean": 1.7271978644872135,
+      "std": 6.172214201888075,
+      "median": 1.0
+    },
+    "koi_impact": {
+      "min": 0.0,
+      "max": 100.806,
+      "mean": 0.7502245583970472,
+      "std": 3.141280591220688,
+      "median": 0.586
+    }
+  },
+  "medians": {
+    "koi_period": 8.0809788,
+    "koi_duration": 3.836305,
+    "koi_depth": 501.4,
+    "koi_prad": 2.62,
+    "koi_teq": 933.0,
+    "koi_insol": 180.55,
+    "koi_model_snr": 30.5,
+    "koi_steff": 5774.0,
+    "koi_slogg": 4.438,
+    "koi_srad": 1.0,
+    "koi_impact": 0.586
+  },
+  "metrics": {
+    "logistic": {
+      "accuracy": 0.8274044795783926,
+      "roc_auc": 0.9024023290758827,
+      "f1": 0.7725694444444444,
+      "cv_auc_mean": 0.8966688679777232,
+      "cv_auc_std": 0.004930852385533191
+    },
+    "gradient_boosting": {
+      "accuracy": 0.9321475625823452,
+      "roc_auc": 0.9800075131480089,
+      "f1": 0.9072907290729073,
+      "cv_auc_mean": 0.9749490183276626,
+      "cv_auc_std": 0.003900167284624576
+    }
+  },
+  "best_model": "gradient_boosting",
+  "examples": [
+    {
+      "name": "Kepler-22 b",
+      "disposition": "CONFIRMED",
+      "tag": "confirmed",
+      "x": [
+        289.8641,
+        7.565,
+        529.1,
+        2.34,
+        257.0,
+        1.03,
+        57.4,
+        5516.0,
+        4.446,
+        0.886,
+        0.856
+      ]
+    },
+    {
+      "name": "Kepler-186 f",
+      "disposition": "CONFIRMED",
+      "tag": "confirmed",
+      "x": [
+        129.9454,
+        5.786,
+        500.1,
+        1.18,
+        177.0,
+        0.23,
+        13.1,
+        3751.0,
+        4.8,
+        0.443,
+        0.909
+      ]
+    },
+    {
+      "name": "Kepler-452 b",
+      "disposition": "CONFIRMED",
+      "tag": "confirmed",
+      "x": [
+        384.8476,
+        9.969,
+        189.9,
+        1.09,
+        220.0,
+        0.56,
+        12.3,
+        5579.0,
+        4.58,
+        0.798,
+        0.059
+      ]
+    },
+    {
+      "name": "Kepler-62 f",
+      "disposition": "CONFIRMED",
+      "tag": "confirmed",
+      "x": [
+        267.2825,
+        7.788,
+        471.9,
+        1.43,
+        207.0,
+        0.44,
+        19.3,
+        4926.0,
+        4.653,
+        0.662,
+        0.378
+      ]
+    },
+    {
+      "name": "Kepler-69 c",
+      "disposition": "CONFIRMED",
+      "tag": "confirmed",
+      "x": [
+        242.4674,
+        12.808,
+        340.3,
+        1.73,
+        286.0,
+        1.59,
+        23.2,
+        5637.0,
+        4.399,
+        0.943,
+        0.173
+      ]
+    },
+    {
+      "name": "K00754.01",
+      "disposition": "FALSE POSITIVE",
+      "tag": "false_positive",
+      "x": [
+        1.737,
+        2.4064,
+        8079.2,
+        33.46,
+        1395.0,
+        891.96,
+        505.6,
+        5805.0,
+        4.564,
+        0.791,
+        1.276
+      ]
+    },
+    {
+      "name": "K00114.01",
+      "disposition": "FALSE POSITIVE",
+      "tag": "false_positive",
+      "x": [
+        7.3618,
+        5.022,
+        233.7,
+        39.21,
+        1342.0,
+        767.22,
+        47.7,
+        6227.0,
+        3.986,
+        1.958,
+        1.169
+      ]
+    },
+    {
+      "name": "K00753.01",
+      "disposition": "CANDIDATE",
+      "tag": "candidate",
+      "x": [
+        19.8991,
+        1.7822,
+        10829.0,
+        14.6,
+        638.0,
+        39.3,
+        76.3,
+        5853.0,
+        4.544,
+        0.868,
+        0.969
+      ]
+    },
+    {
+      "name": "K00777.01",
+      "disposition": "CANDIDATE",
+      "tag": "candidate",
+      "x": [
+        40.4195,
+        3.362,
+        6256.0,
+        7.51,
+        467.0,
+        11.29,
+        36.9,
+        5446.0,
+        4.507,
+        0.781,
+        0.911
+      ]
+    }
+  ]
+}
