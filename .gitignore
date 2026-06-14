@@ -1,0 +1,9 @@
+.venv/
+__pycache__/
+*.pyc
+.DS_Store
+.env
+*.log
+# Raw NASA table is regenerable (model/train.py re-downloads it). The trained
+# artifacts the app needs (web/model.onnx, web/artifacts.json) ARE committed.
+data/koi.csv

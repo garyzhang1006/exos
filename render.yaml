@@ -1,0 +1,16 @@
+# Render deploy blueprint for the Exos AI tutor proxy + static app.
+# 1. Push this repo to GitHub.
+# 2. Render -> New -> Blueprint -> pick this repo (or New -> Web Service).
+# 3. Set the OPENAI_API_KEY env var in the Render dashboard (sync:false = secret,
+#    entered by hand, never stored in the repo).
+# Render injects $PORT automatically; server/server.py binds 0.0.0.0:$PORT.
+services:
+  - type: web
+    name: exos
+    runtime: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: python server/server.py
+    envVars:
+      - key: OPENAI_API_KEY
+        sync: false
