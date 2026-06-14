@@ -5,9 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Exos — find planets the way NASA does</title>
 <meta name="description" content="A machine-learning model trained on NASA's real Kepler data predicts whether a transit signal is a real exoplanet or a false positive — and an AI tutor (GPT-4o-mini) teaches you the astronomy behind every prediction." />
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cg fill='none' stroke='%233FA7C4' stroke-width='1.6'%3E%3Ccircle cx='16' cy='16' r='9'/%3E%3Cpath d='M16 3v6M16 23v6M3 16h6M23 16h6'/%3E%3C/g%3E%3C/svg%3E" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cg fill='none' stroke='%232563EB' stroke-width='1.8'%3E%3Ccircle cx='16' cy='16' r='9'/%3E%3Cpath d='M16 3v6M16 23v6M3 16h6M23 16h6'/%3E%3C/g%3E%3C/svg%3E" />
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&family=Saira+Semi+Condensed:ital,wght@0,600;0,700;1,700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <!-- ONNX Runtime Web - runs the trained Kepler classifier 100% client-side -->
 <script src="https://cdn.jsdelivr.net/npm/onnxruntime-web@1.26.0/dist/ort.wasm.min.js"></script>
 <link rel="stylesheet" href="./app.css" />
@@ -18,13 +18,8 @@
 
 <div class="loading" id="loading">
   <div class="boot">
-    <div class="scan"></div>
-    <div id="loadmsg">Initializing detector…</div>
-    <div class="lines">
-      <b>INIT ONNX RUNTIME ........ <i>OK</i></b>
-      <b>LOAD KEPLER+TESS MODEL ... <i>OK</i></b>
-      <b>CALIBRATE DETECTOR ...... <i>OK</i></b>
-    </div>
+    <div class="spinner"></div>
+    <div id="loadmsg">Loading the model…</div>
   </div>
 </div>
 
