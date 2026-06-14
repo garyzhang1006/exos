@@ -12,7 +12,7 @@
   size(); addEventListener("resize", size);
   (function loop(){ x.clearRect(0,0,w,h);
     for(const p of pts){ p.a += p.s; const tw=.5+.5*Math.sin(p.a);
-      x.globalAlpha=.25+.75*tw; x.fillStyle="#cfe0ff"; x.beginPath();
+      x.globalAlpha=.22+.6*tw; x.fillStyle="#AEB8CC"; x.beginPath();
       x.arc(p.x,p.y,p.r,0,7); x.fill(); }
     x.globalAlpha=1; requestAnimationFrame(loop); })();
 })();
@@ -135,12 +135,11 @@ const App = {
     const p = this.prob, pct = Math.round(p*100);
     const planet = p >= 0.5;
     const v = document.getElementById("verdict");
-    v.textContent = planet ? "🪐 Likely a real planet" : "🚫 Likely a false positive";
+    v.textContent = planet ? "Likely a real planet" : "Likely a false positive";
     v.style.color = planet ? "var(--good)" : "var(--bad)";
     const fill = document.getElementById("conffill");
     fill.style.width = pct+"%";
-    fill.style.background = planet
-      ? "linear-gradient(90deg,#2e7d5b,var(--good))" : "linear-gradient(90deg,#7d2e3c,var(--bad))";
+    fill.style.background = planet ? "var(--good)" : "var(--bad)";
     document.getElementById("confpct").textContent = pct+"% planet";
     document.getElementById("probv").textContent = pct+"%";
     document.getElementById("radv").textContent = (+this.x[this.fidx("koi_prad")]).toFixed(1);
@@ -220,23 +219,23 @@ const Transit = {
       const ph = ((now - t0) % period) / period;
       g.clearRect(0,0,W,H);
       const grd = g.createRadialGradient(starX-18, starY-16, 8, starX, starY, starR);
-      grd.addColorStop(0,"#fff7e0"); grd.addColorStop(.5,"#ffd479"); grd.addColorStop(1,"#e8973a");
+      grd.addColorStop(0,"#FFF4D9"); grd.addColorStop(.5,"#FFD27A"); grd.addColorStop(1,"#E0902F");
       g.fillStyle=grd; g.beginPath(); g.arc(starX,starY,starR,0,7); g.fill();
-      g.globalAlpha=.18; g.fillStyle="#ffd479"; g.beginPath(); g.arc(starX,starY,starR+10,0,7); g.fill(); g.globalAlpha=1;
+      g.globalAlpha=.14; g.fillStyle="#FFD27A"; g.beginPath(); g.arc(starX,starY,starR+10,0,7); g.fill(); g.globalAlpha=1;
 
       if(ph>=a && ph<=b){
         const u=(ph-a)/(b-a);
         const px = starX - starR - pr + u*(2*(starR+pr));
-        g.fillStyle="#0a0f1f"; g.beginPath(); g.arc(px,starY,pr,0,7); g.fill();
-        g.strokeStyle="rgba(110,168,255,.55)"; g.lineWidth=1.5; g.stroke();
+        g.fillStyle="#05070C"; g.beginPath(); g.arc(px,starY,pr,0,7); g.fill();
+        g.strokeStyle="rgba(63,167,196,.55)"; g.lineWidth=1.5; g.stroke();
       }
 
       const baseY=210, h=70, x0=70, x1=W-30;
-      g.strokeStyle="#23314f"; g.lineWidth=1;
+      g.strokeStyle="#1B2330"; g.lineWidth=1;
       g.beginPath(); g.moveTo(x0,baseY); g.lineTo(x1,baseY); g.stroke();
-      g.fillStyle="#7e8db0"; g.font="12px Inter, sans-serif";
-      g.fillText("brightness", x0, baseY-h-8); g.fillText("time →", x1-44, baseY+22);
-      g.strokeStyle = planet ? "#48d597" : "#ff6b81"; g.lineWidth=2.4; g.beginPath();
+      g.fillStyle="#7C8AA0"; g.font="11px 'IBM Plex Mono', ui-monospace, monospace";
+      g.fillText("BRIGHTNESS", x0, baseY-h-8); g.fillText("TIME", x1-34, baseY+22);
+      g.strokeStyle = planet ? "#46D9A0" : "#FF5D6C"; g.lineWidth=2.2; g.beginPath();
       for(let i=0;i<=240;i++){
         const fph=i/240, sx=x0+(x1-x0)*fph;
         let dim=0;
@@ -247,7 +246,7 @@ const Transit = {
       g.stroke();
       const mx=x0+(x1-x0)*ph;
       let mdim=0; if(ph>=a&&ph<=b){const u=(ph-a)/(b-a);const ov=Math.max(0,1-Math.abs(u-.5)*2);mdim=dipFrac*ov;}
-      g.fillStyle="#cfe0ff"; g.beginPath(); g.arc(mx, baseY-h+mdim*h, 3.2, 0, 7); g.fill();
+      g.fillStyle="#3FA7C4"; g.beginPath(); g.arc(mx, baseY-h+mdim*h, 3.2, 0, 7); g.fill();
       me.raf = requestAnimationFrame(frame);
     }
     me.raf = requestAnimationFrame(frame);
@@ -365,8 +364,8 @@ const Missions = {
     const wrap=document.getElementById("missions"); wrap.replaceChildren();
     this.LIST.forEach(m=>{
       const c=document.createElement("div"); c.className="mission"; c.id="m-"+m.id;
-      const h=document.createElement("div"); h.className="mh"; h.append(m.icon+" "+m.title);
-      const s=document.createElement("span"); s.className="mstate"; s.textContent="○"; h.append(s);
+      const h=document.createElement("div"); h.className="mh"; h.append(m.title);
+      const s=document.createElement("span"); s.className="mstate"; s.textContent="ARMED"; h.append(s);
       const g=document.createElement("div"); g.className="mgoal"; g.textContent=m.goal;
       const t=document.createElement("div"); t.className="mteach"; t.textContent="✓ "+m.teach;
       c.append(h,g,t); wrap.appendChild(c);
@@ -385,7 +384,7 @@ const Missions = {
       const c=document.getElementById("m-"+m.id); if(!c) return;
       const done=this.solved.has(m.id);
       c.classList.toggle("solved", done);
-      c.querySelector(".mstate").textContent = done?"✓":"○";
+      c.querySelector(".mstate").textContent = done?"● SOLVED":"ARMED";
     });
     const el=document.getElementById("mprog");
     if(el) el.textContent = this.solved.size+" / "+this.LIST.length;
