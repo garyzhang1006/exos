@@ -128,3 +128,34 @@ footer .cite{background:var(--card);border:1px solid var(--line);border-radius:1
 .hidden{display:none!important}
 .skip{position:absolute;left:-999px}.skip:focus{left:10px;top:10px;background:#16203c;padding:8px 12px;border-radius:8px;z-index:99}
 @media(max-width:560px){.nav .btnlink{display:none}.bar{grid-template-columns:104px 1fr 48px}}
+
+/* mode toggle */
+.modetoggle{display:inline-flex;gap:0;border:1px solid var(--line);border-radius:10px;overflow:hidden;margin:2px 0 8px}
+.modetoggle button{background:#0e1730;color:var(--muted);font-size:12.5px;font-weight:700;padding:6px 12px}
+.modetoggle button.on{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#0a1024}
+.slider.adv{display:block}
+.sliders.simple .slider.adv{display:none}
+
+/* derived science readout */
+.derived{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.tagd{font-size:12.5px;font-weight:600;border:1px solid var(--line);border-radius:999px;padding:5px 11px;background:#0e1730;color:var(--ink)}
+.tagd b{color:var(--accent)}
+.tagd.hz-yes{border-color:#2e7d5b;color:#9bf0c8} .tagd.hz-yes b{color:var(--good)}
+.tagd.hz-hot{border-color:#7d4a2e;color:#ffc59b} .tagd.hz-hot b{color:var(--warn)}
+.tagd.hz-cold{border-color:#2e567d;color:#9bd0ff} .tagd.hz-cold b{color:var(--accent)}
+.vizcap{font-size:11.5px;color:#6f7ea0;margin-top:6px;text-align:center;font-style:italic}
+
+/* missions */
+.mprog{font-size:12px;font-weight:700;color:#0a1024;background:var(--gold);border-radius:999px;padding:3px 10px;margin-left:8px;vertical-align:middle}
+.missions{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}
+@media(max-width:760px){.missions{grid-template-columns:1fr}}
+.mission{border:1px solid var(--line);border-radius:14px;padding:14px 16px;background:#0e1730;position:relative;transition:.2s}
+.mission.solved{border-color:#2e7d5b;background:linear-gradient(180deg,#0f2a20,#0e1730)}
+.mission .mh{display:flex;align-items:center;gap:8px;font-weight:700;font-size:15px}
+.mission .mstate{margin-left:auto;font-size:18px;opacity:.5}
+.mission.solved .mstate{opacity:1}
+.mission .mgoal{font-size:13px;color:var(--muted);margin:6px 0 0}
+.mission .mteach{font-size:13px;color:#9bf0c8;margin-top:8px;display:none}
+.mission.solved .mteach{display:block}
+.mission .mtry{margin-top:9px;font-size:12.5px;color:var(--accent);background:#16203c;border:1px solid var(--line);border-radius:8px;padding:5px 10px;cursor:pointer}
+.mission .mtry:hover{background:#1a274a}

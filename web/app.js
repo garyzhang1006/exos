@@ -17,6 +17,9 @@
     x.globalAlpha=1; requestAnimationFrame(loop); })();
 })();
 
+// Beginner view shows these five intuitive controls; "All 11" reveals the rest.
+const SIMPLE_KEYS = new Set(["koi_period","koi_depth","koi_prad","koi_model_snr","koi_impact"]);
+
 const App = {
   art:null, session:null, inName:null, feat:null, x:null, cur:null, prob:0.5,
 
@@ -34,7 +37,12 @@ const App = {
       this.fillStatic();
       this.buildSliders();
       this.buildChips();
+      document.querySelectorAll("#modetoggle button").forEach(b=> b.onclick=()=>{
+        document.querySelectorAll("#modetoggle button").forEach(x=>x.classList.toggle("on", x===b));
+        document.getElementById("sliders").className = "sliders "+(b.dataset.mode==="simple"?"simple":"full");
+      });
       Tutor.init(this);
+      Missions.init(this);
       document.getElementById("loading").style.opacity="0";
       setTimeout(()=>document.getElementById("loading").classList.add("hidden"),420);
 
@@ -68,7 +76,7 @@ const App = {
     this.art.feature_order.forEach((k,i)=>{
       const f = this.feat[i], {lo,hi} = this.sliderRange(k);
       const step = (hi-lo)/400 || 0.001;
-      const row = document.createElement("div"); row.className="slider";
+      const row = document.createElement("div"); row.className="slider"+(SIMPLE_KEYS.has(k)?"":" adv");
       const top = document.createElement("div"); top.className="top";
       const lab = document.createElement("div"); lab.className="lab";
       lab.textContent = f.label + (f.unit?(" ("+f.unit+")"):""); lab.title = f.note;
@@ -117,6 +125,7 @@ const App = {
     const probs = out["probabilities"] ? out["probabilities"].data : out[this.session.outputNames[1]].data;
     this.prob = probs[1];                 // P(confirmed planet)
     this.render();
+    Missions.check(this);
     Tutor.onPredict();
   },
 
@@ -148,8 +157,24 @@ const App = {
       truth.appendChild(document.createTextNode(label));
     }
 
+    this.renderDerived();
     this.renderWhy();
     Transit.draw(this.x, this.fidx.bind(this), planet);
+  },
+
+  renderDerived(){
+    const prad = +this.x[this.fidx("koi_prad")];
+    const insol = +this.x[this.fidx("koi_insol")];
+    const cat = prad<1.25?"Earth-size":prad<2?"Super-Earth":prad<4?"Mini-Neptune":prad<10?"Neptune-size":"Jupiter-size+";
+    let hz="In the habitable zone", cls="hz-yes";
+    if(insol>1.78){ hz="Too much starlight — likely too hot"; cls="hz-hot"; }
+    else if(insol<0.32){ hz="Too little starlight — likely too cold"; cls="hz-cold"; }
+    const wrap=document.getElementById("derived"); wrap.replaceChildren();
+    const t1=document.createElement("span"); t1.className="tagd"; t1.append("Planet size: ");
+    const b1=document.createElement("b"); b1.textContent=cat; t1.append(b1);
+    const t2=document.createElement("span"); t2.className="tagd "+cls;
+    const b2=document.createElement("b"); b2.textContent=hz; t2.append(b2);
+    wrap.append(t1,t2);
   },
 
   renderWhy(){
@@ -312,6 +337,61 @@ const Tutor = {
     }
   }
 };
+// ---------- Missions: guided learning loop (create each false-positive type) ----------
+const Missions = {
+  app:null, solved:new Set(),
+  LIST:[
+    {id:"binary", icon:"👯", title:"Star in disguise",
+     goal:"Push Planet radius past 25 R⊕ and get a FALSE-POSITIVE verdict.",
+     check:a=> +a.x[a.fidx("koi_prad")]>=25 && a.prob<0.5,
+     teach:"A real planet is tiny next to its star. A “planet” tens of Earth-radii wide is really a second star — an eclipsing binary. Size alone gives it away."},
+    {id:"snr", icon:"📉", title:"Lost in the noise",
+     goal:"Drop Signal-to-noise to 8 or below and get a FALSE-POSITIVE verdict.",
+     check:a=> +a.x[a.fidx("koi_model_snr")]<=8 && a.prob<0.5,
+     teach:"A weak signal (low signal-to-noise) can’t be trusted — it’s often instrument noise pretending to be a transit."},
+    {id:"graze", icon:"🌗", title:"Grazing the edge",
+     goal:"Raise the Impact parameter to 1.0+ and get a FALSE-POSITIVE verdict.",
+     check:a=> +a.x[a.fidx("koi_impact")]>=1.0 && a.prob<0.5,
+     teach:"Impact parameter is how centrally the object crosses. A grazing pass (≥1) only clips the star’s edge and is frequently a false positive."},
+    {id:"hab", icon:"🌍", title:"A world like home",
+     goal:"Get a REAL-PLANET verdict with radius under 1.6 R⊕ and starlight near Earth’s (0.3–1.8×).",
+     check:a=> a.prob>=0.5 && +a.x[a.fidx("koi_prad")]<=1.6 && +a.x[a.fidx("koi_insol")]>=0.3 && +a.x[a.fidx("koi_insol")]<=1.8,
+     teach:"Small and rocky, with about Earth’s sunlight — that’s the recipe for a potentially habitable world. Rare and precious."},
+  ],
+
+  init(app){
+    this.app=app;
+    try{ this.solved=new Set(JSON.parse(localStorage.getItem("exos_missions")||"[]")); }catch(e){ this.solved=new Set(); }
+    const wrap=document.getElementById("missions"); wrap.replaceChildren();
+    this.LIST.forEach(m=>{
+      const c=document.createElement("div"); c.className="mission"; c.id="m-"+m.id;
+      const h=document.createElement("div"); h.className="mh"; h.append(m.icon+" "+m.title);
+      const s=document.createElement("span"); s.className="mstate"; s.textContent="○"; h.append(s);
+      const g=document.createElement("div"); g.className="mgoal"; g.textContent=m.goal;
+      const t=document.createElement("div"); t.className="mteach"; t.textContent="✓ "+m.teach;
+      c.append(h,g,t); wrap.appendChild(c);
+    });
+    this.refresh();
+  },
+
+  check(app){
+    let changed=false;
+    this.LIST.forEach(m=>{ if(!this.solved.has(m.id) && m.check(app)){ this.solved.add(m.id); changed=true; } });
+    if(changed){ try{ localStorage.setItem("exos_missions", JSON.stringify([...this.solved])); }catch(e){} this.refresh(); }
+  },
+
+  refresh(){
+    this.LIST.forEach(m=>{
+      const c=document.getElementById("m-"+m.id); if(!c) return;
+      const done=this.solved.has(m.id);
+      c.classList.toggle("solved", done);
+      c.querySelector(".mstate").textContent = done?"✓":"○";
+    });
+    const el=document.getElementById("mprog");
+    if(el) el.textContent = this.solved.size+" / "+this.LIST.length;
+  }
+};
+
 function code(t){ const c=document.createElement("code"); c.textContent=t; return c; }
 function setLoad(m){ const el=document.getElementById("loadmsg"); if(el) el.textContent=m; }
 window.addEventListener("load", ()=>App.init());
